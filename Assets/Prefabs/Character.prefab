@@ -169,7 +169,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -387,7 +387,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -437,8 +437,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed5c9ca6daf65e34d901f9edc9afdd67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugDetectionSphere: {fileID: 0}
-  debugProjectionSphere: {fileID: 0}
+  debugDetectionSphere: {fileID: 3350577015388103711}
+  debugProjectionSphere: {fileID: 7946785993795762574}
   detectionRange: 2
   projectionRange: 5
   detected: 0
