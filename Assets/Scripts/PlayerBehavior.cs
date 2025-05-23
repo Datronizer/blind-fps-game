@@ -1,0 +1,76 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+// TODO: Refactor Player related variables into a Player class
+public class PlayerBehavior : MonoBehaviour
+{
+    Player player;
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        player = new Player();
+
+        player.MoveAction = InputSystem.actions.FindAction("Move");
+        player.JumpAction = InputSystem.actions.FindAction("Jump");
+        player.LookAction = InputSystem.actions.FindAction("Look");
+        player.SprintAction = InputSystem.actions.FindAction("Sprint");
+
+        player.PlayerCamera = GameObject.Find("PlayerCamera");
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        OnMovePressed();
+        OnSprintPressed();
+
+        LookAt();
+    }
+
+    void Move(Vector3 normalizedMoveDirection)
+    {
+        transform.Translate(normalizedMoveDirection * Time.deltaTime * player.MoveSpeed * player.CurrentSprintValue);
+    }
+
+    void LookAt()
+    {
+        // Get look values from the Input System
+        Vector2 lookValue = player.LookAction.ReadValue<Vector2>();
+
+        // Rotate the camera up and down
+        Vector3 newPlayerRotation = transform.localEulerAngles;
+        newPlayerRotation.y += lookValue.x;
+        transform.localRotation = Quaternion.Euler(0, newPlayerRotation.y, 0);
+
+        // Rotate the player model and child camera left and right
+        Vector3 newCameraRotation = player.PlayerCamera.transform.localEulerAngles;
+        newCameraRotation.x -= lookValue.y;
+        Mathf.Clamp(newCameraRotation.x, -90, 90);
+        player.PlayerCamera.transform.localRotation = Quaternion.Euler(newCameraRotation.x, 0, 0);
+    }
+
+    void OnMovePressed()
+    {
+        // This gets (x,y) values from the Input System
+        Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
+
+        // We need to convert (x,y) to (x,z) for 3D movement
+        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
+
+        Move(moveValue3d);
+    }
+
+    void OnSprintPressed()
+    {
+        // Increase SprintTimer up to TimeToMaxSprint
+        // Decrease SprintTimer down to 0, but use TimeToStopSprint for the rate
+        if (player.SprintAction.IsPressed())
+            player.SprintTimer += Time.deltaTime;
+        else
+            player.SprintTimer -= Time.deltaTime * (player.TimeToMaxSprint / player.TimeToStopSprint);
+
+        player.SprintTimer = Mathf.Clamp(player.SprintTimer, 0, player.TimeToMaxSprint);
+        player.CurrentSprintValue = Mathf.Lerp(1f, player.SprintMultiplier, player.SprintTimer / player.TimeToMaxSprint);
+    }
+}
