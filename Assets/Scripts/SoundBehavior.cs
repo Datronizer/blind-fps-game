@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class SoundController : MonoBehaviour
+public class SoundBehavior : MonoBehaviour
 {
     // Imports
     GameObject characterModel;
@@ -14,8 +14,8 @@ public class SoundController : MonoBehaviour
     public float detectionRange = 2f;
     public float projectionRange = 5f;
 
-    public bool detected = false;  // If the character is detected by the sound and reveals tier 1 information
-    public bool identified = false;  // If the character is identified and reveals tier 2 information
+    public bool isDetected = false;  // If the character is detected by the sound and reveals tier 1 information
+    public bool isIdentified = false;  // If the character is identified and reveals tier 2 information
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,5 +32,11 @@ public class SoundController : MonoBehaviour
 
     }
 
-    
+    void ProjectSound()
+    {
+        debugDetectionSphere.transform.localScale = new Vector3(0, 0, 0);
+        
+    }
+
+    v
 }
