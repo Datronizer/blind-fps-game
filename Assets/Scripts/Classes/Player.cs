@@ -1,25 +1,23 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : Character
+public class Player : Entity
 {
-    public new float moveSpeed = 4f;
-    public new float sprintMultiplier = 1.5f;
-    public new float timeToMaxSprint = 1.2f;
-    public new float timeToStopSprint = 0.5f;
+    public Player()
+    {
+        // Set base class values for this Player instance
+        MoveSpeed = 4f;
+        SprintMultiplier = 5f;
+        TimeToMaxSprint = 1.2f;
+        TimeToStopSprint = 0.5f;
+    }
+
 
     // Input actions
-    InputAction moveAction;
-    InputAction jumpAction;
-    InputAction lookAction;
-    InputAction sprintAction;
+    public InputAction MoveAction { get ; set ; }
+    public InputAction JumpAction { get ; set ; }
+    public InputAction LookAction { get; set; }
+    public InputAction SprintAction { get; set; }
 
-    GameObject playerCamera;
-
-    public InputAction MoveAction { get => moveAction; set => moveAction = value; }
-    public InputAction JumpAction { get => jumpAction; set => jumpAction = value; }
-    public InputAction LookAction { get => lookAction; set => lookAction = value; }
-    public InputAction SprintAction { get => sprintAction; set => sprintAction = value; }
-
-    public GameObject PlayerCamera { get => playerCamera; set => playerCamera = value; }
+    public GameObject PlayerCameraGameObject { get; set; }
 }

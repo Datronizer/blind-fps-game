@@ -1,36 +1,57 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-// TODO: Refactor Player related variables into a Player class
-public class PlayerBehavior : MonoBehaviour
+public class PlayerBehavior : EntityBehavior
 {
-    Player player;
+    private readonly Player player = new Player();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        player = new Player();
+        player.EntitySoundManager = GameObject.Find("EntitySoundManager")
+            .GetComponent<EntitySoundManager>();
 
         player.MoveAction = InputSystem.actions.FindAction("Move");
         player.JumpAction = InputSystem.actions.FindAction("Jump");
         player.LookAction = InputSystem.actions.FindAction("Look");
         player.SprintAction = InputSystem.actions.FindAction("Sprint");
 
-        player.PlayerCamera = GameObject.Find("PlayerCamera");
+        player.PlayerCameraGameObject = GameObject.Find("PlayerCamera");
     }
 
     // Update is called once per frame
     void Update()
     {
-        OnMovePressed();
+        ApplyGravityToSelf();
+
         OnSprintPressed();
+        OnMovePressed();
+        OnAttackPressed();
 
         LookAt();
     }
 
     void Move(Vector3 normalizedMoveDirection)
     {
-        transform.Translate(normalizedMoveDirection * Time.deltaTime * player.MoveSpeed * player.CurrentSprintValue);
+        transform.Translate(player.CurrentSprintValue * player.MoveSpeed * Time.deltaTime * normalizedMoveDirection);
+        //SoundBehavior.ProjectSound(name);
+
+        Debug.Log("Player ms: " + player.MoveSpeed);
+        Debug.Log("Player sprint: " + player.CurrentSprintValue);
+        Debug.Log("Current Speed: " + player.CurrentSprintValue * player.MoveSpeed * Time.deltaTime * normalizedMoveDirection);
+    }
+
+    void Sprint()
+    {
+        // Increase SprintTimer up to TimeToMaxSprint
+        // Decrease SprintTimer down to 0, but use TimeToStopSprint for the rate
+        if (player.SprintAction.IsPressed())
+            player.SprintTimer += Time.deltaTime;
+        else
+            player.SprintTimer -= Time.deltaTime * (player.TimeToMaxSprint / player.TimeToStopSprint);
+
+        player.SprintTimer = Mathf.Clamp(player.SprintTimer, 0, player.TimeToMaxSprint);
+        player.CurrentSprintValue = Mathf.Lerp(1f, player.SprintMultiplier, player.SprintTimer / player.TimeToMaxSprint);
     }
 
     void LookAt()
@@ -44,10 +65,10 @@ public class PlayerBehavior : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, newPlayerRotation.y, 0);
 
         // Rotate the player model and child camera left and right
-        Vector3 newCameraRotation = player.PlayerCamera.transform.localEulerAngles;
+        Vector3 newCameraRotation = player.PlayerCameraGameObject.transform.localEulerAngles;
         newCameraRotation.x -= lookValue.y;
         Mathf.Clamp(newCameraRotation.x, -90, 90);
-        player.PlayerCamera.transform.localRotation = Quaternion.Euler(newCameraRotation.x, 0, 0);
+        player.PlayerCameraGameObject.transform.localRotation = Quaternion.Euler(newCameraRotation.x, 0, 0);
     }
 
     void OnMovePressed()
@@ -58,19 +79,24 @@ public class PlayerBehavior : MonoBehaviour
         // We need to convert (x,y) to (x,z) for 3D movement
         Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
 
+        Debug.Log(moveValue3d);
         Move(moveValue3d);
     }
 
     void OnSprintPressed()
     {
-        // Increase SprintTimer up to TimeToMaxSprint
-        // Decrease SprintTimer down to 0, but use TimeToStopSprint for the rate
-        if (player.SprintAction.IsPressed())
-            player.SprintTimer += Time.deltaTime;
-        else
-            player.SprintTimer -= Time.deltaTime * (player.TimeToMaxSprint / player.TimeToStopSprint);
+        Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
+        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
 
-        player.SprintTimer = Mathf.Clamp(player.SprintTimer, 0, player.TimeToMaxSprint);
-        player.CurrentSprintValue = Mathf.Lerp(1f, player.SprintMultiplier, player.SprintTimer / player.TimeToMaxSprint);
+        bool isPlayerMovingForward = Vector3.Angle(transform.forward, moveValue3d) < Mathf.PI * 0.5f;
+        if (IsGrounded() && isPlayerMovingForward)
+        {
+            Sprint();
+        }
+    }
+
+    void OnAttackPressed()
+    {
+
     }
 }

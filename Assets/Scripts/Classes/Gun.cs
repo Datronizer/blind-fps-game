@@ -2,7 +2,7 @@ public class Gun : Weapon
 {
     int ammoCapacity;
     int currentMagazineCount;
-    enum bulletType;  // TODO
+    //enum bulletType;  // TODO
 
     float reloadTime;
 
