@@ -3,11 +3,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerBehavior : EntityBehavior
 {
-    private readonly Player player = new Player();
+    protected Player player = new Player();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        entity = player;
+
         player.EntitySoundManager = GameObject.Find("EntitySoundManager")
             .GetComponent<EntitySoundManager>();
 
@@ -27,21 +29,12 @@ public class PlayerBehavior : EntityBehavior
         OnSprintPressed();
         OnMovePressed();
         OnAttackPressed();
+        OnJumpClicked();
 
         LookAt();
     }
 
-    void Move(Vector3 normalizedMoveDirection)
-    {
-        transform.Translate(player.CurrentSprintValue * player.MoveSpeed * Time.deltaTime * normalizedMoveDirection);
-        //SoundBehavior.ProjectSound(name);
-
-        Debug.Log("Player ms: " + player.MoveSpeed);
-        Debug.Log("Player sprint: " + player.CurrentSprintValue);
-        Debug.Log("Current Speed: " + player.CurrentSprintValue * player.MoveSpeed * Time.deltaTime * normalizedMoveDirection);
-    }
-
-    void Sprint()
+    protected override void Sprint()
     {
         // Increase SprintTimer up to TimeToMaxSprint
         // Decrease SprintTimer down to 0, but use TimeToStopSprint for the rate
@@ -78,8 +71,6 @@ public class PlayerBehavior : EntityBehavior
 
         // We need to convert (x,y) to (x,z) for 3D movement
         Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
-
-        Debug.Log(moveValue3d);
         Move(moveValue3d);
     }
 
@@ -88,8 +79,8 @@ public class PlayerBehavior : EntityBehavior
         Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
         Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
 
-        bool isPlayerMovingForward = Vector3.Angle(transform.forward, moveValue3d) < Mathf.PI * 0.5f;
-        if (IsGrounded() && isPlayerMovingForward)
+        //bool isPlayerMovingForward = Vector3.Angle(transform.forward, moveValue3d) < Mathf.PI * 0.5f;
+        if (IsGrounded())
         {
             Sprint();
         }
@@ -98,5 +89,13 @@ public class PlayerBehavior : EntityBehavior
     void OnAttackPressed()
     {
 
+    }
+
+    void OnJumpClicked()
+    {
+        if (player.JumpAction.triggered)
+        {
+            Jump();
+        }
     }
 }

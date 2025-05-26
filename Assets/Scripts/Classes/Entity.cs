@@ -7,9 +7,12 @@ public class Entity
         Health = 100f;
 
         MoveSpeed = 3f;
+
         SprintMultiplier = 1.15f;
         TimeToMaxSprint = 0.7f;
         TimeToStopSprint = 0.3f;
+
+        JumpForce = 5f;
 
         CurrentSprintValue = 1f;
         SprintTimer = 0f;
@@ -26,6 +29,9 @@ public class Entity
     public float SprintMultiplier { get; set; }
     public float TimeToMaxSprint { get; set; }
     public float TimeToStopSprint { get; set; }
+
+
+    public float JumpForce { get; set; }
 
 
     public float CurrentSprintValue { get; set; }
