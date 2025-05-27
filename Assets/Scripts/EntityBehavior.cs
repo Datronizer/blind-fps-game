@@ -9,31 +9,23 @@ public class EntityBehavior : MonoBehaviour
     {
         entity.EntitySoundManager = GameObject.Find("EntitySoundManager")
             .GetComponent<EntitySoundManager>();
+        entity.Rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        ApplyGravityToSelf();
+        
     }
 
     protected virtual void Move(Vector3 normalizedMoveDirection)
     {
-        transform.Translate(entity.CurrentSprintValue * entity.MoveSpeed * Time.deltaTime * normalizedMoveDirection);
+        entity.Rigidbody.linearVelocity = entity.CurrentSprintValue * entity.MoveSpeed * Time.deltaTime * normalizedMoveDirection;
         //SoundBehavior.ProjectSound(name);
     }
 
     protected virtual void Sprint() { }
 
-    protected virtual void ApplyGravityToSelf()
-    {
-        //if (!IsGrounded())
-        //{
-            // Apply gravity to the entity
-            //Vector3 gravity = new Vector3(0, -9.81f, 0);
-            //transform.Translate(gravity * Time.deltaTime);
-        //}
-    }
 
     protected virtual void Jump()
     {

@@ -24,8 +24,6 @@ public class PlayerBehavior : EntityBehavior
     // Update is called once per frame
     void Update()
     {
-        ApplyGravityToSelf();
-
         OnSprintPressed();
         OnMovePressed();
         OnAttackPressed();
@@ -70,7 +68,7 @@ public class PlayerBehavior : EntityBehavior
         Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
 
         // We need to convert (x,y) to (x,z) for 3D movement
-        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
+        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y).normalized;
         Move(moveValue3d);
     }
 

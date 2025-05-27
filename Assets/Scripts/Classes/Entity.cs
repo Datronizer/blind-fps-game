@@ -43,4 +43,7 @@ public class Entity
 
 
     public EntitySoundManager EntitySoundManager { get; set; }
+
+
+    public Rigidbody Rigidbody { get; set; }
 }
