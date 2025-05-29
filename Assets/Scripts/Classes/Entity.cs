@@ -6,16 +6,18 @@ public class Entity
     {
         Health = 100f;
 
-        MoveSpeed = 3f;
+        MoveSpeed = 2f;
 
-        SprintMultiplier = 1.15f;
+        SprintMultiplier = 1.1f;
         TimeToMaxSprint = 0.7f;
         TimeToStopSprint = 0.3f;
 
-        JumpForce = 5f;
+        JumpForce = 6.5f;
 
         CurrentSprintValue = 1f;
         SprintTimer = 0f;
+
+        TurnTime = 0.1f;
 
         PrimaryWeapon = new Weapon();
         SecondaryWeapon = new Weapon();
@@ -38,6 +40,9 @@ public class Entity
     public float SprintTimer { get; set; }
 
 
+    public float TurnTime { get; set; }
+
+
     public Weapon PrimaryWeapon { get; set; }
     public Weapon SecondaryWeapon { get; set; }
 
@@ -45,5 +50,5 @@ public class Entity
     public EntitySoundManager EntitySoundManager { get; set; }
 
 
-    public Rigidbody Rigidbody { get; set; }
+    public Rigidbody Rb { get; set; }
 }

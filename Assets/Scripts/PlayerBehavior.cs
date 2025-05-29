@@ -10,8 +10,7 @@ public class PlayerBehavior : EntityBehavior
     {
         entity = player;
 
-        player.EntitySoundManager = GameObject.Find("EntitySoundManager")
-            .GetComponent<EntitySoundManager>();
+        player.Rb = GetComponent<Rigidbody>();
 
         player.MoveAction = InputSystem.actions.FindAction("Move");
         player.JumpAction = InputSystem.actions.FindAction("Jump");
@@ -19,11 +18,15 @@ public class PlayerBehavior : EntityBehavior
         player.SprintAction = InputSystem.actions.FindAction("Sprint");
 
         player.PlayerCameraGameObject = GameObject.Find("PlayerCamera");
+        player.EntitySoundManager = GameObject.Find("EntitySoundManager")
+            .GetComponent<EntitySoundManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        ClampRestingVelocity();
+
         OnSprintPressed();
         OnMovePressed();
         OnAttackPressed();
@@ -50,15 +53,14 @@ public class PlayerBehavior : EntityBehavior
         // Get look values from the Input System
         Vector2 lookValue = player.LookAction.ReadValue<Vector2>();
 
-        // Rotate the camera up and down
+        // Rotate the player model and child camera left and right
         Vector3 newPlayerRotation = transform.localEulerAngles;
         newPlayerRotation.y += lookValue.x;
         transform.localRotation = Quaternion.Euler(0, newPlayerRotation.y, 0);
 
-        // Rotate the player model and child camera left and right
+        // Rotate the camera left up and down
         Vector3 newCameraRotation = player.PlayerCameraGameObject.transform.localEulerAngles;
         newCameraRotation.x -= lookValue.y;
-        Mathf.Clamp(newCameraRotation.x, -90, 90);
         player.PlayerCameraGameObject.transform.localRotation = Quaternion.Euler(newCameraRotation.x, 0, 0);
     }
 
@@ -66,19 +68,12 @@ public class PlayerBehavior : EntityBehavior
     {
         // This gets (x,y) values from the Input System
         Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
-
-        // We need to convert (x,y) to (x,z) for 3D movement
-        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y).normalized;
-        Move(moveValue3d);
+        Move(moveValue.x, moveValue.y);
     }
 
     void OnSprintPressed()
     {
-        Vector2 moveValue = player.MoveAction.ReadValue<Vector2>();
-        Vector3 moveValue3d = new Vector3(moveValue.x, 0, moveValue.y);
-
-        //bool isPlayerMovingForward = Vector3.Angle(transform.forward, moveValue3d) < Mathf.PI * 0.5f;
-        if (IsGrounded())
+        if (player.SprintAction.IsPressed() && IsGrounded())
         {
             Sprint();
         }
@@ -91,7 +86,8 @@ public class PlayerBehavior : EntityBehavior
 
     void OnJumpClicked()
     {
-        if (player.JumpAction.triggered)
+        if (player.JumpAction.IsPressed() &&
+            player.Rb.linearVelocity.y <= 0)
         {
             Jump();
         }

@@ -6,10 +6,10 @@ public class Player : Entity
     public Player()
     {
         // Set base class values for this Player instance
-        MoveSpeed = 4f;
-        SprintMultiplier = 5f;
-        TimeToMaxSprint = 1.2f;
-        TimeToStopSprint = 0.5f;
+        MoveSpeed = 3f;
+        SprintMultiplier = 1.3f;
+        TimeToMaxSprint = 0.8f;
+        TimeToStopSprint = 0.2f;
     }
 
 
